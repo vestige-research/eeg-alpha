@@ -1,22 +1,25 @@
-.PHONY: help setup test format lint commit clean
+.PHONY: help setup test format lint commit clean branch sync push
 
 help:
 	@echo "eeg-alpha - Development Commands"
 	@echo ""
 	@echo "Setup:"
-	@echo "  make setup     - Initial project setup"
+	@echo "  make setup          - Initial project setup"
 	@echo ""
 	@echo "Development:"
-	@echo "  make format    - Format code with black"
-	@echo "  make lint      - Lint code with ruff"
-	@echo "  make test      - Run tests with pytest"
-	@echo "  make check     - Run all checks (format, lint, test)"
+	@echo "  make format         - Format code with black"
+	@echo "  make lint           - Lint code with ruff"
+	@echo "  make test           - Run tests with pytest"
+	@echo "  make check          - Run all checks (format, lint, test)"
 	@echo ""
-	@echo "Git:"
-	@echo "  make commit    - Interactive commit with commitizen"
+	@echo "Git Workflow:"
+	@echo "  make branch NAME=feature-name  - Create and switch to new feature branch"
+	@echo "  make commit         - Interactive commit with commitizen"
+	@echo "  make sync           - Update main branch from remote"
+	@echo "  make push           - Push current branch to remote"
 	@echo ""
 	@echo "Cleanup:"
-	@echo "  make clean     - Remove Python cache files"
+	@echo "  make clean          - Remove Python cache files"
 
 setup:
 	@bash setup.sh
@@ -42,6 +45,27 @@ check: format lint test
 
 commit:
 	@cz commit
+
+branch:
+ifndef NAME
+	@echo "❌ Error: Please provide a branch name"
+	@echo "Usage: make branch NAME=feature-name"
+	@exit 1
+endif
+	@echo "🌿 Creating branch: $(NAME)"
+	@git checkout -b $(NAME)
+	@echo "✓ Switched to new branch '$(NAME)'"
+
+sync:
+	@echo "🔄 Syncing with remote main..."
+	@git checkout main
+	@git pull origin main
+	@echo "✓ main branch updated"
+
+push:
+	@echo "⬆️  Pushing current branch..."
+	@git push -u origin $$(git branch --show-current)
+	@echo "✓ Branch pushed to remote"
 
 clean:
 	@echo "🧹 Cleaning up..."
