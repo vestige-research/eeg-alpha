@@ -33,8 +33,9 @@ htmlcov/
 .DS_Store
 
 # Quarto
-/.quarto/
+**/.quarto/
 _site/
 _freeze/
 *.html
 !docs/**/*.html
+**/*.quarto_ipynb
