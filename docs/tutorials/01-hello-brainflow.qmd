@@ -1,0 +1,183 @@
+---
+title: "Hello BrainFlow"
+subtitle: "Your First EEG Data Stream"
+format:
+  html:
+    code-fold: false
+execute:
+  eval: false
+---
+
+::: {.callout-tip}
+## Follow Along Interactively
+
+Want to run this code yourself? Download the companion Python script: [01_hello_brainflow.py](https://github.com/vestige-research/eeg-alpha/blob/main/examples/01_hello_brainflow.py)
+
+```bash
+# Install dependencies
+pip install brainflow numpy
+
+# Run the script
+python examples/01_hello_brainflow.py
+```
+:::
+
+## What is BrainFlow?
+
+[**BrainFlow**](https://brainflow.org/) is a Python library that lets you acquire EEG (brain wave) data from various hardware devices. Think of it as a universal adapter that works with different EEG headsets using the same code.
+
+Instead of learning a different API for each manufacturer (OpenBCI, Muse, Neurosity, etc.), BrainFlow provides one consistent interface for all of them. Learn more in the [BrainFlow documentation](https://brainflow.readthedocs.io/en/stable/).
+
+## Introduction
+
+This tutorial demonstrates the basics of acquiring EEG data with BrainFlow using a **synthetic board**. No hardware required!
+
+**What you'll learn:**
+
+- How to connect to a BrainFlow board
+- How to stream EEG data in real-time
+- How to examine the data structure
+- Basic data quality checks
+
+::: {.callout-note}
+## Why Synthetic Data?
+
+The synthetic board generates realistic EEG-like signals, perfect for learning the API without hardware. Switching to real OpenBCI hardware later is simple: just change the board ID and add a serial port parameter. We'll cover hardware setup in a separate tutorial.
+:::
+
+## Step 1: Import and Initialize
+
+```{python}
+from brainflow.board_shim import BoardIds, BoardShim, BrainFlowInputParams
+import numpy as np
+import time
+
+# Use synthetic board - generates realistic fake EEG data
+board_id = BoardIds.SYNTHETIC_BOARD.value
+print(f"Using board ID {board_id} (SYNTHETIC_BOARD)")
+```
+
+## Step 2: Create Connection Parameters
+
+The synthetic board doesn't require any connection parameters (no serial port, no IP address).
+
+```{python}
+params = BrainFlowInputParams()
+# Empty params object - synthetic board needs no configuration
+```
+
+## Step 3: Get Board Specifications
+
+Before connecting, we can query the board's capabilities:
+
+```{python}
+sampling_rate = BoardShim.get_sampling_rate(board_id)
+eeg_channels = BoardShim.get_eeg_channels(board_id)
+
+print(f"Sampling Rate: {sampling_rate} Hz")
+print(f"EEG Channels: {len(eeg_channels)} channels")
+print(f"Channel indices: {eeg_channels}")
+```
+
+The synthetic board provides **250 Hz sampling rate** with **16 EEG channels**.
+
+## Step 4: Initialize and Connect
+
+```{python}
+# Initialize the board
+board = BoardShim(board_id, params)
+
+try:
+    # Connect to the board
+    print("Connecting to board...")
+    board.prepare_session()
+    print("✓ Connected!")
+
+    # Start streaming
+    print("Starting data stream...")
+    board.start_stream()
+    print("✓ Stream started!")
+```
+
+::: {.callout-note}
+## What's Happening?
+
+- `prepare_session()` allocates resources and connects to the board
+- `start_stream()` begins acquiring data in the background
+- BrainFlow buffers the data while we wait
+:::
+
+## Step 5: Collect Data
+
+Let's collect data for 5 seconds:
+
+```{python}
+    print("\nCollecting data for 5 seconds...")
+    time.sleep(5)
+
+    # Get all accumulated data
+    data = board.get_board_data()
+
+    print(f"\nData shape: {data.shape}")
+    print(f"- Rows (channels): {data.shape[0]}")
+    print(f"- Columns (samples): {data.shape[1]}")
+    print(f"\nExpected samples: ~{sampling_rate * 5} ({sampling_rate} Hz × 5 seconds)")
+    print(f"Actual samples: {data.shape[1]}")
+```
+
+## Step 6: Examine EEG Data
+
+The data is a 2D numpy array where:
+
+- Each **row** is a different channel/metric
+- Each **column** is a point in time
+
+```{python}
+    # Extract the first EEG channel
+    first_eeg_channel = eeg_channels[0]
+    eeg_data = data[first_eeg_channel, :]
+
+    print(f"\nFirst EEG channel (index {first_eeg_channel}):")
+    print(f"- Mean: {np.mean(eeg_data):.2f} µV")
+    print(f"- Std Dev: {np.std(eeg_data):.2f} µV")
+    print(f"- Range: [{np.min(eeg_data):.2f}, {np.max(eeg_data):.2f}] µV")
+
+    # Sanity check: EEG is typically ±100 µV
+    if np.abs(np.max(eeg_data)) < 200:
+        print("\n✓ Values are in realistic EEG range!")
+```
+
+## Step 7: Understanding the Data
+
+Let's look at the first few samples:
+
+```{python}
+    print(f"\nExample: First 5 samples from channel {first_eeg_channel}:")
+    print(eeg_data[0:5])
+```
+
+## Step 8: Clean Up
+
+Always clean up your session:
+
+```{python}
+finally:
+    print("\nCleaning up...")
+    board.stop_stream()
+    board.release_session()
+    print("✓ Session ended successfully")
+```
+
+## Next Steps
+
+Now that you can acquire EEG data, try:
+
+1. Changing the collection time (currently 5 seconds)
+2. Examining other EEG channels
+3. Plotting the data with matplotlib
+4. Moving to the next tutorial: Alpha Detection
+
+## Resources
+
+- [BrainFlow Documentation](https://brainflow.readthedocs.io/)
+- [OpenBCI Hardware](https://openbci.com/)
