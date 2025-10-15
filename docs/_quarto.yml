@@ -1,0 +1,22 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "eeg-alpha"
+  description: "Open-source alpha neurofeedback training with OpenBCI"
+  navbar:
+    left:
+      - text: "Home"
+        href: index.qmd
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    code-fold: false
+    code-tools: true
+
+execute:
+  freeze: auto
+  warning: false
