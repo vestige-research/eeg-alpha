@@ -1,0 +1,47 @@
+---
+title: "eeg-alpha"
+subtitle: "Open-source alpha neurofeedback training with OpenBCI"
+---
+
+## Welcome
+
+**eeg-alpha** is a tutorial-driven project for learning EEG analysis and neurofeedback using consumer hardware.
+
+### What You'll Learn
+
+- How to acquire EEG data with BrainFlow and OpenBCI
+- Signal processing techniques for alpha wave detection
+- Real-time neurofeedback implementation
+- Best practices for EEG research with open-source tools
+
+### Getting Started
+
+This project uses the **OpenBCI Cyton** board (8 channels) or **Cyton + Daisy** (16 channels). Don't have hardware? No problem! All tutorials work with synthetic (simulated) data.
+
+## Prerequisites
+
+```bash
+# Clone the repository
+git clone https://github.com/vestige/eeg-alpha.git
+cd eeg-alpha
+
+# Set up environment
+./setup.sh
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+## Hardware
+
+- **Synthetic Board**: No hardware needed (great for learning!)
+- **OpenBCI Cyton**: 8-channel EEG system
+- **OpenBCI Cyton + Daisy**: 16-channel EEG system
+
+## License
+
+MIT License - See [LICENSE](https://github.com/vestige/eeg-alpha/blob/main/LICENSE)
+
+## Acknowledgments
+
+Built with [BrainFlow](https://brainflow.org/) for EEG data acquisition.
