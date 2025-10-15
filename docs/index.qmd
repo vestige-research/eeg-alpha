@@ -18,6 +18,14 @@ subtitle: "Open-source alpha neurofeedback training with OpenBCI"
 
 This project uses the **OpenBCI Cyton** board (8 channels) or **Cyton + Daisy** (16 channels). Don't have hardware? No problem! All tutorials work with synthetic (simulated) data.
 
+## Tutorials
+
+Start with the basics and work your way up:
+
+1. [Hello BrainFlow](tutorials/01-hello-brainflow.qmd) - Your first EEG data stream
+2. Alpha Detection *(coming soon)*
+3. Real-time Neurofeedback *(coming soon)*
+
 ## Prerequisites
 
 ```bash
@@ -44,4 +52,4 @@ MIT License - See [LICENSE](https://github.com/vestige/eeg-alpha/blob/main/LICEN
 
 ## Acknowledgments
 
-Built with [BrainFlow](https://brainflow.org/) for EEG data acquisition.
+Built with [BrainFlow](https://brainflow.org/) for EEG data acquisition and designed for [OpenBCI](https://openbci.com/) hardware.

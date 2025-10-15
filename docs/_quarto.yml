@@ -9,6 +9,10 @@ website:
     left:
       - text: "Home"
         href: index.qmd
+      - text: "Tutorials"
+        menu:
+          - text: "Hello BrainFlow"
+            href: tutorials/01-hello-brainflow.qmd
 
 format:
   html:
