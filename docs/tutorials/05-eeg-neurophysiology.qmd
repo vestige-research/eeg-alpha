@@ -1,0 +1,375 @@
+---
+title: "Understanding EEG Neurophysiology"
+subtitle: "A Deep Dive into Signal Origin, Propagation, and Measurement"
+format:
+  html:
+    code-fold: false
+    toc: true
+    toc-depth: 3
+    toc-location: right
+execute:
+  eval: false
+---
+
+## Introduction
+
+Now that you've acquired your first EEG data stream in the [Hello BrainFlow](02-hello-brainflow.qmd) tutorial, it's time to understand what those signals actually represent. This tutorial provides an academic-level exploration of the neurophysiological foundations of EEG: where the signal comes from, how it travels through tissue to reach our electrodes, and what this means for data collection and interpretation.
+
+Understanding these fundamentals is essential for:
+
+-   Designing rigorous experiments
+-   Troubleshooting data quality issues
+-   Drawing appropriate conclusions from your data and others
+
+::: {.callout-note appearance="simple"}
+This tutorial draws extensively on the excellent review by Jackson and Bolger (2014), which bridges technical and conceptual explanations of EEG neurophysiology. All researchers working with EEG should read their [full paper](https://onlinelibrary.wiley.com/doi/10.1111/psyp.12283).
+:::
+
+## The Neural Origins of EEG
+
+### What Creates the EEG Signal?
+
+The EEG signal we measure at the scalp arises from **synchronized postsynaptic potentials in populations of cortical pyramidal neurons** (Jackson & Bolger, 2014; Lopes da Silva, 2010). Let's unpack what this means:
+
+-   **Synchronized Populations**: Large groups of thousands to millions of neurons firing together in time (within \~10-20 ms windows)
+-   **Postsynaptic Potentials**: Electrical voltage changes when ions (charged particles) flow into the receiving end of a synapse (the connection point where one neuron's signal reaches another neuron)
+-   **Cortical** **Pyramidal Neurons**: Triangle-shaped neurons with long branching dendrites, arranged in parallel columns perpendicular to the brain's surface. Located in the cortex (the brain's outer layer of gray matter)
+
+::: {.callout-note appearance="simple"}
+## What EEG Can and Cannot Detect
+
+Because EEG requires **cortical pyramidal neurons** arranged in **parallel**, this fundamentally limits what brain activity we can measure:
+
+**EEG is good at detecting:** - Activity from the cortical surface (especially gyri/ridges close to the skull) - Rhythmic, synchronized oscillations (alpha, beta, theta, etc.) - Large-scale coordinated activity across neural populations
+
+**EEG struggles to detect:** - Deep brain structures (thalamus, hippocampus, amygdala) - signals too weak by the time they reach the scalp - Randomly-oriented neurons (like those in subcortical nuclei) - Single neurons or small groups - individual signals are far too small - Activity from cortical sulci (valleys) - tangential orientation produces weaker scalp signals
+
+This is why EEG excels at measuring phenomena like alpha waves (large synchronized cortical oscillations) but cannot directly measure activity in structures like the amygdala or individual neuron firing.
+:::
+
+#### The Dipole Model
+
+When a neuron receives synaptic input, it creates a localized separation of electrical charge—what physicists call a [**dipole**](https://en.wikipedia.org/wiki/Dipole#Molecular_dipoles "A dipole is a separation of positive and negative electrical charges. In neurons, when ions flow into one part of the cell, they create a negative charge there and a positive charge elsewhere, forming an electric dipole that generates a field detectable by EEG."). The animation below illustrates this process:
+
+<video autoplay muted playsinline controls style="width: 100%; max-width: 800px; margin: 1em auto; display: block;">
+
+<source src="../media/videos/dipole-model.mp4" type="video/mp4">
+
+Your browser does not support the video tag. </video>
+
+Consider an [**excitatory postsynaptic potential (EPSP)**](https://www.khanacademy.org/science/biology/human-biology/neuron-nervous-system/v/excitatory-and-inhibitory-postsynaptic-potentials "An EPSP is a temporary depolarization of the postsynaptic membrane potential caused by neurotransmitters binding to receptors, making the neuron more likely to fire an action potential.") arriving at the apical dendrites of a pyramidal cell:
+
+1.  Positive ions (Na+) flow *into* the neuron at the synapse
+2.  This creates a local *negativity* in the extracellular fluid near the dendrites (the **sink**)
+3.  Current flows through the neuron and exits elsewhere, typically near the soma
+4.  This creates a local *positivity* in the extracellular fluid near the cell body (the **source**)
+
+This source-sink arrangement forms an electrical dipole that generates an electric field extending into the surrounding tissue.
+
+::: {.callout-note appearance="simple"}
+## A Critical Point on Polarity
+
+The polarity of the EEG signal (positive or negative deflection) does **not** tell you whether neural activity is excitatory or inhibitory. An EPSP near the dendrites produces a scalp negativity, but an EPSP near the soma produces a scalp positivity. Similarly, an IPSP can produce either polarity depending on its location along the neuron. The measured polarity depends on dipole orientation, not on the nature of the synaptic input.
+:::
+
+### Why Only Some Neural Activity is Measurable
+
+A single neuron's dipole is far too weak to be detected at the scalp. For the signal to propagate through skull and scalp, two conditions must be met:
+
+1.  **Parallel Arrangement**: Neurons must be organized with similar orientations. Cortical pyramidal cells, arranged in columns perpendicular to the cortical surface, meet this requirement. Random orientations would cause individual dipoles to cancel each other out.
+
+![Parallel neurons create strong summed signals, while random orientations cause cancellation](../media/images/parallel-neurons.png){width="100%"}
+
+2.  **Synchronous Activity**: Neurons must fire together within a \~10-20 ms window. If one neuron's dipole points positive while another's points negative at the same time, they cancel. Synchronization ensures that dipoles sum constructively rather than destructively.
+
+These requirements explain why EEG primarily reflects **cortical activity** (where pyramidal cells are organized in parallel) rather than subcortical activity, and why EEG is particularly sensitive to **rhythmic, synchronized activity** in the alpha (8-13 Hz), beta (13-30 Hz), and other frequency bands.
+
+### Tangential vs. Radial Dipoles
+
+The geometry of the cortex creates two types of dipoles measurable by EEG:
+
+-   [**Radial dipoles**](https://en.wikipedia.org/wiki/Gyrus "Radial dipoles are oriented perpendicular to the skull surface, typically located in cortical gyri (the ridges or bumps of the folded cortex). These produce more focal voltage patterns at the scalp because the dipole points directly outward."): Located in cortical gyri (ridges), oriented perpendicular to the skull. These produce voltage distributions that are more focal at the scalp.
+
+-   [**Tangential dipoles**](https://en.wikipedia.org/wiki/Sulcus_(neuroanatomy) "Tangential dipoles are oriented parallel to the skull surface, typically located in cortical sulci (the valleys or folds between gyri). These produce broader, more diffuse voltage patterns because the dipole orientation is sideways relative to the scalp."): Located in cortical sulci (valleys), oriented parallel to the skull surface. These produce broader voltage distributions and are measurable at electrodes that are not directly above the source.
+
+The strength of the measured signal decreases rapidly with distance from the source—following an inverse square or inverse cube relationship depending on the model (Jackson & Bolger, 2014).
+
+## Signal Propagation: From Brain to Electrode
+
+### Volume Conduction in Neural Tissue
+
+Within the brain, the EEG signal propagates via [**volume conduction**](https://en.wikipedia.org/wiki/Volume_conductor_model "Volume conduction is the passive spread of electrical current through biological tissue. The current follows the path of least resistance through the conductive extracellular fluid and tissue, allowing signals to propagate from their source to distant measurement points."). This is simply the principle that charged particles repel like charges and attract opposite charges:
+
+1.  A pool of negative ions repels nearby negative ions
+2.  Those repelled ions move away and repel other negative ions
+3.  This creates a "wave" of charge propagation through the extracellular medium
+
+Volume conduction allows the signal to travel through the conductive cerebrospinal fluid and neural tissue. However, the brain is not a homogeneous conductor. Myelinated fiber tracts, cell membranes, and tissue boundaries all impede or redirect current flow, constraining where signals can propagate.
+
+### Capacitive Coupling Through Tissue Layers
+
+Once the signal reaches the boundary of the brain, it can no longer propagate via volume conduction because ions cannot jump across insulating layers. From brain to electrode, the signal must cross several boundaries:
+
+-   Brain → Dura mater (meninges)
+-   Dura → Skull
+-   Skull → Scalp
+-   Scalp → Electrode gel
+-   Gel → Electrode
+
+Each of these transitions acts as a [**capacitor**](https://www.khanacademy.org/science/physics/circuits-topic/circuits-with-capacitors/v/capacitors-and-capacitance "A capacitor is an electrical component that stores energy in an electric field between two conductive plates separated by an insulating material (dielectric). In biological tissue, non-conductive layers like skull and skin act as the insulator between conductive layers like brain tissue and scalp."): two conductive volumes separated by an insulating barrier. Charges accumulate on one side of the barrier and, through electrostatic repulsion, push charges away on the other side. This process repeats at each layer, forming a "capacitor stack" that allows the signal to reach the electrode (Jackson & Bolger, 2014).
+
+This capacitive transmission has important consequences:
+
+-   **Signal attenuation**: Each layer reduces signal strength
+-   **Spatial smearing**: The signal spreads out, so each electrode detects activity from a wide region of cortex
+-   **High-frequency attenuation**: Skull and scalp act as low-pass filters, attenuating gamma frequencies (\>30 Hz) more than lower frequencies
+
+### The Critical Role of Electrode Gel
+
+Why is electrode gel necessary? Consider the layer between scalp and electrode:
+
+**Without gel**: Hair, dead skin cells, and air create a high-resistance, poor connection. The signal is severely attenuated.
+
+**With gel**: Conductive gel fills spaces between hairs and penetrates the outer skin layer, creating a low-resistance path that preserves signal strength.
+
+The gel forms one more capacitor in the stack, but because it's conductive, it allows much more signal to reach the electrode than would otherwise be possible. Some modern "dry" electrode systems use different approaches (e.g., active electrodes with high input impedance), but the principle remains: minimizing impedance between scalp and electrode is crucial for signal quality.
+
+## Measurement Principles
+
+### The Amplifier's Role
+
+EEG signals at the scalp are extraordinarily small—typically in the range of 10-100 microvolts (μV). Compare this to:
+
+-   Electrical noise from wall outlets: 120 volts (1.2 million times larger)
+-   Muscle artifacts: millivolts (1000 times larger)
+-   Electrode motion artifacts: hundreds of microvolts
+
+The **amplifier** serves two critical functions:
+
+1.  **Maximize signal-to-noise ratio (SNR)**: Amplify the brain signal before environmental noise has a chance to contaminate it
+2.  **Enable measurement**: Increase the signal above the noise floor of downstream electronics
+
+### Understanding Input Impedance
+
+One of the most important specifications of an EEG amplifier is its [**input impedance**](https://en.wikipedia.org/wiki/Input_impedance "Input impedance is the opposition to current flow that the amplifier presents to the signal source. High input impedance (megaohms) means the amplifier draws very little current from the source, preserving signal strength and improving signal-to-noise ratio."). Understanding this requires some basic circuit theory.
+
+#### Voltage, Current, and Resistance
+
+In any electrical circuit, three quantities are related by Ohm's Law:
+
+$$V = I \times R$$
+
+Where: - $V$ = Voltage (volts) - $I$ = Current (amperes)\
+- $R$ = Resistance (ohms, Ω)
+
+**Voltage** is a difference in electrical charge between two points. **Current** is the flow of charge from one point to another. **Resistance** impedes that flow.
+
+When current flows through a resistor, the voltage decreases—this is called a **voltage drop**. The size of this voltage drop depends on what fraction of the total circuit resistance is represented by that resistor.
+
+#### Why High Input Impedance Matters
+
+Consider a simplified EEG circuit:
+
+```
+[Brain signal] → [Scalp-electrode resistance] → [Wire resistance] → [Amplifier input impedance] → [Measurement]
+```
+
+The amplifier measures voltage by creating a very large input impedance. This large impedance causes almost all of the circuit's voltage to drop across the amplifier's input, where it can be measured.
+
+Here's why this matters for noise rejection: Electrical noise can enter the system anywhere along the wire between electrode and amplifier. Noise that enters near the amplifier travels through very little wire resistance, while the brain signal travels through the entire wire length. If the amplifier's input impedance is small, noise experiences a different proportion of total resistance than signal does, and the SNR degrades. But if input impedance is very large—say, 1 MΩ or more—it dominates the total resistance so much that both signal and noise experience essentially the same proportion of total resistance, preserving the SNR.
+
+**Modern EEG systems** typically have input impedances of 1-10 MΩ or higher, which: - Allows measurement of very weak signals - Reduces sensitivity to electrode impedance variations - Enables collection without extensive scalp abrasion - Improves rejection of environmental noise
+
+### Electrode Impedance: Why We Check It
+
+The **electrode-scalp interface impedance** is the resistance between the scalp and the electrode. We want this to be low (typically \<25 kΩ) for several reasons:
+
+1.  **Signal strength**: High impedance drops more voltage before reaching the amplifier, reducing the measurable signal
+
+2.  **Noise susceptibility**: Electrodes with high impedance act as better antennas for electromagnetic noise
+
+3.  **Between-electrode consistency**: If some electrodes have high impedance and others low, this introduces spatially systematic noise that's difficult to remove in post-processing
+
+4.  **Reference quality**: If using a reference electrode, its impedance directly affects all other channels
+
+::: {.callout-tip appearance="simple"}
+## Practical Impedance Guidelines
+
+For the OpenBCI Cyton system: - Target: \<25 kΩ per electrode - Acceptable: \<50 kΩ - Problematic: \>50 kΩ
+
+Some modern high-impedance systems can tolerate higher electrode impedances, but lower is always better for signal quality.
+:::
+
+## Sources of Noise and Artifacts
+
+### External Electrical Noise
+
+Environmental electrical noise comes from:
+
+-   [**60 Hz line noise**](https://en.wikipedia.org/wiki/Mains_hum "Line noise is electromagnetic interference from AC power lines, which operate at 60 Hz in North America and 50 Hz in most other countries. This creates a constant background signal that can contaminate EEG recordings.") (50 Hz in Europe): Power lines, lights, equipment
+-   **Radio frequency interference**: Cell phones, WiFi, wireless equipment
+-   **Display refresh**: CRT monitors (less common now), LED flicker
+
+**Mitigation strategies**: - Shielded recording rooms (Faraday cages) - Shielded electrode cables - Active electrodes (amplify at the electrode) - Keeping cables away from power sources - Passive notch filtering (though this can distort your signal)
+
+### Internal Physiological Artifacts
+
+Biological noise sources that cannot be easily eliminated:
+
+-   [**Electrooculogram (EOG)**](https://en.wikipedia.org/wiki/Electrooculography "EOG is the measurement of electrical potentials generated by eye movements and blinks. These signals can be 100+ microvolts—much larger than brain signals—and contaminate EEG recordings, especially at frontal electrodes."): Eye movements and blinks (can be \>100 μV)
+-   [**Electromyogram (EMG)**](https://en.wikipedia.org/wiki/Electromyography "EMG measures electrical activity from muscle contractions. Jaw clenching, facial expressions, and neck tension create high-frequency artifacts that contaminate EEG, particularly in temporal and frontal regions."): Muscle tension, especially in jaw, face, neck
+-   [**Electrocardiogram (ECG)**](https://en.wikipedia.org/wiki/Electrocardiography "ECG measures the electrical activity of the heart. The heartbeat creates rhythmic voltage changes (especially the R-wave) that can appear in EEG recordings, particularly from electrodes near the chest or neck."): Heart activity (visible in some electrode locations)
+-   **Skin potentials**: Slow DC drifts from sweating, movement
+
+**Mitigation strategies**: - Minimize participant movement and muscle tension - Monitor for blinks/eye movements (separate EOG electrodes or camera) - High-pass filtering to remove slow drifts (but carefully—this affects your data) - [**Independent component analysis (ICA)**](https://en.wikipedia.org/wiki/Independent_component_analysis "ICA is a computational method that separates mixed signals into independent sources. In EEG, it can identify and remove artifacts like eye blinks, muscle activity, and heartbeat by decomposing the data into statistically independent components.") in post-processing - Artifact rejection or regression techniques
+
+::: {.callout-tip appearance="simple"}
+## Prevention \> Correction
+
+It is always better to collect clean data than to try to correct noisy data after the fact. Spend the extra few minutes at the start of each session to:
+
+-   Let electrodes settle (stabilize half-cell potentials)
+-   Check and optimize all electrode impedances
+-   Ensure good gel-scalp contact
+-   Test for line noise before starting
+-   Instruct participants to minimize movement and muscle tension
+:::
+
+## Spatial Resolution and Localization
+
+### The Inverse Problem
+
+One of the fundamental challenges in EEG is the [**inverse problem**](https://en.wikipedia.org/wiki/Inverse_problem "The inverse problem in EEG is the challenge of determining the location and configuration of electrical sources in the brain given only the voltage measurements at the scalp. Because many different source configurations can produce the same scalp pattern, the solution is not unique."): given a pattern of voltages measured at the scalp, can we determine which brain regions generated that pattern?
+
+Unfortunately, the answer is: **not uniquely**. An infinite number of source configurations could produce the same scalp voltage distribution (Pascual-Marqui, 1999). This is because:
+
+1.  **Spatial smearing**: Each electrode detects summed activity from large cortical regions
+2.  **Signal attenuation**: Deep sources contribute weakly to scalp measurements
+3.  **Volume conduction**: Multiple sources contribute to each electrode
+4.  **Non-uniform conductivity**: Skull openings, tissue boundaries, individual anatomy all affect propagation
+
+### Source Localization Methods
+
+Various algorithms attempt to solve the inverse problem by making assumptions to constrain possible solutions:
+
+-   **Dipole fitting**: Assumes a small number of discrete sources
+-   **Distributed source models** (e.g., LORETA, sLORETA): Assumes smooth spatial distributions
+-   **Beamforming**: Uses spatial filters to isolate sources
+-   **Bayesian methods**: Incorporates anatomical priors from MRI/fMRI
+
+::: {.callout-warning appearance="simple"}
+## Source Localization Caveats
+
+-   All methods make simplifying assumptions (spherical head models, homogeneous conductivity, etc.)
+-   Localization accuracy degrades for deep sources
+-   Spatial resolution is limited (∼1-2 cm at best)
+-   **Always be explicit about the assumptions** your method makes
+-   Consider combining EEG with fMRI or other modalities to constrain solutions
+:::
+
+### Can EEG Detect Deep Sources?
+
+In principle, yes—large dipoles in deep structures (thalamus, hippocampus) can generate fields measurable at the scalp. However:
+
+-   The signal decreases rapidly with depth (inverse square or inverse cube law)
+-   Deep sources contribute to broad, diffuse scalp patterns (hard to distinguish from superficial sources)
+-   Deep sources are more susceptible to noise contamination
+-   The extent of deep source contributions to typical EEG recordings remains debated
+
+For alpha neurofeedback applications, we're primarily concerned with **posterior cortical sources** in occipital and parietal cortex—relatively superficial regions where EEG sensitivity is high.
+
+## Implications for Alpha Neurofeedback
+
+### Why Alpha is Well-Suited for EEG
+
+The alpha rhythm (8-13 Hz) is an ideal target for EEG-based neurofeedback because:
+
+1.  **Strong signal**: Alpha generates large-amplitude oscillations (∼50 μV) that are easy to detect
+2.  **Good spatial localization**: Posterior alpha sources are superficial (occipital cortex)
+3.  **Consistent generators**: [**Thalamocortical circuits**](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6688014/ "Thalamocortical circuits are networks connecting the thalamus (a deep brain structure) and the cortex. These reciprocal connections generate rhythmic oscillations including alpha waves through synchronized feedback loops.") produce synchronized alpha across large neural populations
+4.  **Functional relevance**: Alpha power correlates with cognitive states (attention, relaxation, cortical inhibition)
+
+### Practical Considerations for Our Project
+
+Given what we now know about EEG neurophysiology, we can establish best practices for the eeg-alpha project:
+
+#### Data Collection
+
+1.  **Electrode placement**: Posterior electrodes (O1, O2, Oz, P3, P4, Pz) for alpha detection
+2.  **Reference choice**: Mastoid or earlobe references minimize interference with posterior signals
+3.  **Impedance checks**: Verify \<25 kΩ before each session
+4.  **Settling time**: Wait 2-3 minutes after cap placement for electrodes to stabilize
+5.  **Environmental control**: Shield recording room if possible; minimize electronic equipment
+
+#### Signal Processing
+
+1.  **Filtering**:
+
+    -   High-pass: 0.5-1 Hz (remove slow drifts)
+    -   Low-pass: 40-50 Hz (remove muscle artifacts)
+    -   Notch: 60 Hz (line noise) if necessary
+
+2.  **Artifact rejection**: Remove epochs with eye movements, muscle tension, or electrode noise
+
+3.  **Alpha extraction**:
+
+    -   [**Bandpass filter**](https://en.wikipedia.org/wiki/Band-pass_filter "A bandpass filter allows frequencies within a specific range to pass through while attenuating frequencies outside that range. For alpha detection, an 8-13 Hz bandpass isolates alpha oscillations from other frequency bands."): 8-13 Hz
+    -   Or use [**FFT**](https://en.wikipedia.org/wiki/Fast_Fourier_transform "The Fast Fourier Transform (FFT) is an algorithm that converts a time-domain signal into its frequency components. In EEG, FFT reveals how much power is present in each frequency band, allowing quantification of alpha, beta, theta, etc.") to extract power in alpha band
+    -   Consider individual alpha frequency (IAF) variation
+
+#### Interpretation
+
+1.  **Spatial specificity**: Remember that each electrode reflects activity from ∼5-10 cm² of cortex
+2.  **Source ambiguity**: Don't over-interpret precise anatomical locations
+3.  **Polarity**: Focus on power/amplitude changes, not deflection direction
+4.  **Individual differences**: Alpha characteristics vary across individuals (frequency, amplitude, topography)
+
+## Key Takeaways
+
+1.  **EEG measures synchronized postsynaptic potentials** in large populations of cortical pyramidal neurons—not action potentials, not single neurons
+
+2.  **Signal propagation involves volume conduction and capacitive coupling** through multiple tissue layers, each of which attenuates and smears the signal
+
+3.  **Measurement quality depends critically on**:
+
+    -   Low electrode impedance
+    -   High amplifier input impedance\
+    -   Minimizing noise sources
+    -   Proper grounding and shielding
+
+4.  **Spatial resolution is limited** by volume conduction and the inverse problem. Be cautious about anatomical claims from EEG alone
+
+5.  **Signal polarity does not indicate excitation vs. inhibition**—it depends on dipole orientation
+
+6.  **Prevention trumps correction**: Invest time in clean data collection rather than relying on post-processing to fix noisy data
+
+## Further Reading
+
+**Essential**: - Jackson, A. F., & Bolger, D. J. (2014). The neurophysiological bases of EEG and EEG measurement: A review for the rest of us. *Psychophysiology*, 51(11), 1061-1071.
+
+**Technical Deep Dives**: - Nunez, P. L., & Srinivasan, R. (2006). *Electric Fields of the Brain: The Neurophysics of EEG* (2nd ed.). Oxford University Press. - Buzsáki, G., Anastassiou, C. A., & Koch, C. (2012). The origin of extracellular fields and currents—EEG, ECoG, LFP and spikes. *Nature Reviews Neuroscience*, 13(6), 407-420.
+
+**Practical Guides**: - Luck, S. J. (2014). *An Introduction to the Event-Related Potential Technique* (2nd ed.). MIT Press. - Keil, A., et al. (2014). Publication guidelines and recommendations for studies using electroencephalography and magnetoencephalography. *Psychophysiology*, 51(1), 1-21.
+
+## References
+
+Ahlfors, S. P., Han, J., Belliveau, J. W., & Hämäläinen, M. S. (2010). Sensitivity of MEG and EEG to source orientation. *Brain Topography*, 23(3), 227-232.
+
+Jackson, A. F., & Bolger, D. J. (2014). The neurophysiological bases of EEG and EEG measurement: A review for the rest of us. *Psychophysiology*, 51(11), 1061-1071.
+
+Lopes da Silva, F. (2010). EEG: Origin and measurement. In C. Mulert & L. Lemieux (Eds.), *EEG-fMRI: Physiological Basis, Technique, and Applications* (pp. 19-38). Springer.
+
+Pascual-Marqui, R. D. (1999). Review of methods for solving the EEG inverse problem. *International Journal of Bioelectromagnetism*, 1(1), 75-86.
+
+------------------------------------------------------------------------
+
+::: {.callout-note appearance="simple"}
+## Next Steps
+
+Now that you understand the neurophysiology of EEG, you're ready to move on to:
+
+-   **Tutorial 3: Alpha Detection** - Extract and analyze alpha rhythms from your data
+-   **Tutorial 4: Real-time Neurofeedback** - Build a closed-loop system for alpha training
+
+Stay tuned!
+:::

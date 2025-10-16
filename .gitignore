@@ -39,3 +39,7 @@ _freeze/
 *.html
 !docs/**/*.html
 **/*.quarto_ipynb
+
+# Manim
+# Treat animations/media/ as build cache - final outputs go in docs/media/
+animations/media/

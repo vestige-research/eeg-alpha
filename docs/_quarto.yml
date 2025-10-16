@@ -11,8 +11,14 @@ website:
         href: index.qmd
       - text: "Tutorials"
         menu:
+          - text: "EEG Basics"
+            href: tutorials/00-eeg-basics.qmd
+          - text: "Understanding EEG Boards"
+            href: tutorials/01-understanding-boards.qmd
           - text: "Hello BrainFlow"
-            href: tutorials/01-hello-brainflow.qmd
+            href: tutorials/02-hello-brainflow.qmd
+          - text: "EEG Neurophysiology"
+            href: tutorials/05-eeg-neurophysiology.qmd
 
 format:
   html:

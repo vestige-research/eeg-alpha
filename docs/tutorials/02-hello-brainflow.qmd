@@ -4,21 +4,23 @@ subtitle: "Your First EEG Data Stream"
 format:
   html:
     code-fold: false
+    toc: true
+    toc-depth: 2
 execute:
   eval: false
 ---
 
-::: {.callout-tip}
+::: callout-tip
 ## Follow Along Interactively
 
-Want to run this code yourself? Download the companion Python script: [01_hello_brainflow.py](https://github.com/vestige-research/eeg-alpha/blob/main/examples/01_hello_brainflow.py)
+Want to run this code yourself? Download the companion Python script: [02_hello_brainflow.py](https://github.com/vestige-research/eeg-alpha/blob/main/examples/02_hello_brainflow.py)
 
-```bash
+``` bash
 # Install dependencies
 pip install brainflow numpy
 
 # Run the script
-python examples/01_hello_brainflow.py
+python examples/02_hello_brainflow.py
 ```
 :::
 
@@ -34,12 +36,12 @@ This tutorial demonstrates the basics of acquiring EEG data with BrainFlow using
 
 **What you'll learn:**
 
-- How to connect to a BrainFlow board
-- How to stream EEG data in real-time
-- How to examine the data structure
-- Basic data quality checks
+-   How to connect to a BrainFlow board
+-   How to stream EEG data in real-time
+-   How to examine the data structure
+-   Basic data quality checks
 
-::: {.callout-note}
+::: callout-note
 ## Why Synthetic Data?
 
 The synthetic board generates realistic EEG-like signals, perfect for learning the API without hardware. Switching to real OpenBCI hardware later is simple: just change the board ID and add a serial port parameter. We'll cover hardware setup in a separate tutorial.
@@ -99,12 +101,12 @@ try:
     print("✓ Stream started!")
 ```
 
-::: {.callout-note}
+::: callout-note
 ## What's Happening?
 
-- `prepare_session()` allocates resources and connects to the board
-- `start_stream()` begins acquiring data in the background
-- BrainFlow buffers the data while we wait
+-   `prepare_session()` allocates resources and connects to the board
+-   `start_stream()` begins acquiring data in the background
+-   BrainFlow buffers the data while we wait
 :::
 
 ## Step 5: Collect Data
@@ -129,8 +131,8 @@ Let's collect data for 5 seconds:
 
 The data is a 2D numpy array where:
 
-- Each **row** is a different channel/metric
-- Each **column** is a point in time
+-   Each **row** is a different channel/metric
+-   Each **column** is a point in time
 
 ```{python}
     # Extract the first EEG channel
@@ -172,12 +174,12 @@ finally:
 
 Now that you can acquire EEG data, try:
 
-1. Changing the collection time (currently 5 seconds)
-2. Examining other EEG channels
-3. Plotting the data with matplotlib
-4. Moving to the next tutorial: Alpha Detection
+1.  Changing the collection time (currently 5 seconds)
+2.  Examining other EEG channels
+3.  Plotting the data with matplotlib
+4.  Moving to the next tutorial: Alpha Detection
 
 ## Resources
 
-- [BrainFlow Documentation](https://brainflow.readthedocs.io/)
-- [OpenBCI Hardware](https://openbci.com/)
+-   [BrainFlow Documentation](https://brainflow.readthedocs.io/)
+-   [OpenBCI Hardware](https://openbci.com/)

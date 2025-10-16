@@ -4,13 +4,13 @@ Hello BrainFlow - Companion Script
 ===================================
 
 Download and run this script locally to follow along with the tutorial:
-https://vestige.github.io/eeg-alpha/tutorials/01-hello-brainflow.html
+https://vestige.github.io/eeg-alpha/tutorials/02-hello-brainflow.html
 
 Requirements:
     pip install brainflow numpy
 
 Usage:
-    python 01-hello-brainflow.py
+    python 02-hello-brainflow.py
 
 This script pauses after each step so you can follow along with the tutorial.
 Press Enter to continue to the next step.

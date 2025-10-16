@@ -9,10 +9,10 @@ subtitle: "Open-source alpha neurofeedback training with OpenBCI"
 
 ### What You'll Learn
 
-- How to acquire EEG data with BrainFlow and OpenBCI
-- Signal processing techniques for alpha wave detection
-- Real-time neurofeedback implementation
-- Best practices for EEG research with open-source tools
+-   How to acquire EEG data with BrainFlow and OpenBCI
+-   Signal processing techniques for alpha wave detection
+-   Real-time neurofeedback implementation
+-   Best practices for EEG research with open-source tools
 
 ### Getting Started
 
@@ -22,13 +22,14 @@ This project uses the **OpenBCI Cyton** board (8 channels) or **Cyton + Daisy** 
 
 Start with the basics and work your way up:
 
-1. [Hello BrainFlow](tutorials/01-hello-brainflow.qmd) - Your first EEG data stream
-2. Alpha Detection *(coming soon)*
-3. Real-time Neurofeedback *(coming soon)*
+0.  [EEG Basics](tutorials/00-eeg-basics.qmd) - Understanding brain waves and electrical signals
+1.  [Understanding EEG Boards](tutorials/01-understanding-boards.qmd) - Synthetic vs. OpenBCI hardware
+2.  [Hello BrainFlow](tutorials/02-hello-brainflow.qmd) - Your first EEG data stream
+5.  [EEG Neurophysiology](tutorials/05-eeg-neurophysiology.qmd) - Deep dive into signal origin and measurement *(advanced)*
 
 ## Prerequisites
 
-```bash
+``` bash
 # Clone the repository
 git clone https://github.com/vestige/eeg-alpha.git
 cd eeg-alpha
@@ -42,9 +43,9 @@ pip install -r requirements.txt
 
 ## Hardware
 
-- **Synthetic Board**: No hardware needed (great for learning!)
-- **OpenBCI Cyton**: 8-channel EEG system
-- **OpenBCI Cyton + Daisy**: 16-channel EEG system
+-   **Synthetic Board**: No hardware needed (great for learning!)
+-   **OpenBCI Cyton**: 8-channel EEG system
+-   **OpenBCI Cyton + Daisy**: 16-channel EEG system
 
 ## License
 

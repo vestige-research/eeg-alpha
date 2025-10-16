@@ -1,0 +1,285 @@
+---
+title: "EEG Basics"
+subtitle: "Understanding Brain Waves and Electrical Signals"
+format:
+  html:
+    code-fold: false
+    toc: true
+    toc-depth: 2
+execute:
+  eval: false
+---
+
+## What is EEG?
+
+**EEG** stands for **Electroencephalography** (electro-encephalo-graphy).
+
+-   **Electro**: Relating to electricity
+-   **Encephalo**: Relating to the brain (from Greek *enkephalos*)
+-   **Graphy**: Recording or writing
+
+Simply put: **EEG is a method of recording the electrical activity of your brain.**
+
+Your brain contains roughly 86 billion neurons, constantly communicating with each other using tiny electrical signals. When large groups of neurons fire together, they create electrical fields strong enough to detect on your scalp. That's what EEG measures.
+
+## A Primer on Electricity
+
+### Voltage: The Electrical "Push"
+
+**Voltage** measures the difference in electrical potential between two points. Think of it like water pressure in a pipe:
+
+-   Higher voltage = stronger "push" of electrical energy
+-   Lower voltage = weaker "push"
+
+Voltage is measured in **volts (V)**.
+
+### Why Microvolts?
+
+Brain signals are incredibly tiny. We measure them in **microvolts (µV)**:
+
+-   **1 volt (V)** = 1,000,000 microvolts (µV)
+-   **1 microvolt (µV)** = 0.000001 volts
+
+To put this in perspective:
+
+| Signal Type          | Typical Voltage        |
+|----------------------|------------------------|
+| AA Battery           | 1.5 V (1,500,000 µV)   |
+| USB Power            | 5 V (5,000,000 µV)     |
+| Household Outlet     | 120 V (120,000,000 µV) |
+| **EEG Brain Signal** | **10-100 µV**          |
+| Heart (ECG)          | 1,000-5,000 µV         |
+
+Brain signals are roughly **10,000 times weaker** than a AA battery! This is why EEG requires sensitive equipment and careful electrode placement.
+
+## How Does EEG Work?
+
+### The Biology
+
+Neurons communicate using action potentials (electrical impulses). When a neuron fires:
+
+1.  Ions (charged particles) flow across the cell membrane
+2.  This creates a tiny voltage change
+3.  When thousands of neurons fire in sync, their voltages add up
+4.  The combined signal is strong enough to detect on the scalp
+
+### The Hardware
+
+EEG systems use **electrodes** (small metal discs or sensors) placed on your scalp:
+
+-   Electrodes detect voltage differences between points on your head
+-   The signals are amplified (made stronger)
+-   The data is digitized and sent to a computer
+
+::: callout-note
+## Reference vs. Signal Electrodes
+
+EEG measures **voltage differences**, not absolute voltage. You always need at least two electrodes:
+
+-   **Signal electrode**: Placed over the brain area you want to measure
+-   **Reference electrode**: Placed at a "neutral" location (often the earlobe or mastoid bone)
+
+The EEG reading is the difference between these two points.
+:::
+
+## Brain Wave Frequency Bands
+
+Brain activity isn't just "on" or "off" - it oscillates (repeats) at different speeds, creating **brain waves**. We categorize these waves by their **frequency** (how fast they oscillate).
+
+Frequency is measured in **Hertz (Hz)** - cycles per second.
+
+### The Five Main Bands
+
+| Band | Frequency Range | Associated Mental States |
+|-------------------|---------------------|--------------------------------|
+| **Delta (δ)** | 0.5 - 4 Hz | Deep sleep, unconsciousness |
+| **Theta (θ)** | 4 - 8 Hz | Light sleep, deep meditation, creativity |
+| **Alpha (α)** | 8 - 13 Hz | **Relaxed wakefulness, closed eyes, calm focus** |
+| **Beta (β)** | 13 - 30 Hz | Active thinking, concentration, alertness |
+| **Gamma (γ)** | 30 - 100 Hz | High-level cognitive processing, consciousness |
+
+::: callout-tip
+## Why "Alpha"?
+
+This project focuses on **alpha waves** (8-13 Hz) because they're:
+
+-   **Easy to produce**: Just close your eyes and relax!
+-   **Well-studied**: Decades of neuroscience research
+-   **Relatively strong signal**: Especially in the back of the head (occipital cortex)
+
+Alpha waves are generated prominently in the visual cortex when you're not actively processing visual information.
+:::
+
+### Visualizing Frequency
+
+![Brain wave frequency bands. Created in https://BioRender.com](../media/images/eeg-brain-wave-frequences.png){width="70%"}
+
+## What is Neurofeedback?
+
+**Neurofeedback** is a technique for training your brain by giving you real-time feedback about its activity.
+
+### The Training Loop
+
+1.  **Measure**: EEG sensors detect your brain activity
+2.  **Analyze**: Software calculates metrics (e.g., "how much alpha activity?")
+3.  **Feedback**: You get visual or audio feedback (e.g., a tone gets louder when alpha increases)
+4.  **Learn**: Your brain learns to produce more of the desired pattern
+
+#### An Analogy: Learning to Wiggle Your Ears
+
+Most people can't wiggle their ears because they don't know which muscles to activate. But if someone put sensors on your ears and played a sound when the right muscles activated, you could learn through trial and error.
+
+Neurofeedback works the same way, but for brain patterns instead of muscles. You can't consciously control individual neurons, but with feedback, you can learn to shift into desired mental states.
+
+#### Why Alpha Training?
+
+Common goals for alpha neurofeedback:
+
+-   **Stress reduction**: Alpha is associated with relaxation
+-   **Meditation practice**: Training the "relaxed but alert" state
+-   **Improving focus**: Finding the calm-alert sweet spot
+-   **Sleep quality**: Training the pre-sleep state
+
+## Sampling Rate: How Fast Do We Measure?
+
+When we record EEG, we take **snapshots** of the voltage at regular intervals. This is called **sampling**.
+
+**Sampling rate** = how many measurements per second
+
+-   Measured in **Hertz (Hz)**
+-   Common EEG rates: 250 Hz, 500 Hz, 1000 Hz
+
+### Why Does Sampling Rate Matter?
+
+To accurately capture a brain wave, you need to sample **faster than the wave oscillates**.
+
+The **Nyquist theorem** states you need to sample at **at least 2× the highest frequency** you want to detect:
+
+| Brain Wave | Max Frequency | Minimum Sampling Rate |
+|------------|---------------|-----------------------|
+| Alpha      | 13 Hz         | 26 Hz                 |
+| Beta       | 30 Hz         | 60 Hz                 |
+| Gamma      | 100 Hz        | 200 Hz                |
+
+In practice, we use **higher sampling rates** (250+ Hz) to:
+
+-   Avoid aliasing (signal distortion)
+-   Capture higher frequencies
+-   Allow for signal processing flexibility
+
+::: callout-note
+## Example: 250 Hz Sampling Rate
+
+If you collect data for **5 seconds** at **250 Hz**:
+
+-   250 samples/second × 5 seconds = **1,250 samples**
+-   Each sample is 1/250 = 4 milliseconds apart
+-   You can accurately detect frequencies up to \~125 Hz
+
+This is more than enough for alpha waves (8-13 Hz)!
+:::
+
+## EEG Channel Placement
+
+![EEG electrode placement using the 10-20 system. Created in https://BioRender.com](../media/images/eeg-10-20-system.png)
+
+-   **Letters** indicate brain regions:
+    -   **Fp**: Frontopolar (forehead)
+    -   **F**: Frontal
+    -   **C**: Central
+    -   **T**: Temporal (sides)
+    -   **P**: Parietal
+    -   **O**: Occipital (back of head)
+-   **Numbers/Letters**:
+    -   **Odd numbers (1, 3)**: Left hemisphere
+    -   **Even numbers (2, 4)**: Right hemisphere
+    -   **z**: Midline (center)
+
+::: callout-tip
+## For Alpha Detection
+
+The strongest alpha signals typically come from the **occipital region** (back of head):
+
+-   **O1**: Left occipital
+-   **Oz**: Center occipital
+-   **O2**: Right occipital
+
+Place electrodes here when starting with alpha neurofeedback!
+:::
+
+::: callout-important
+## Channel Numbers vs. Electrode Positions
+
+**Important distinction:** The 10-20 system labels (Fp1, O1, C3, etc.) describe **where on your head** the electrode is placed. These are **not the same** as channel numbers!
+
+-   **Channel numbers** (1, 2, 3, etc.) refer to the physical input pins on your EEG board
+-   **Electrode positions** (O1, Fp1, etc.) refer to anatomical locations on your scalp
+
+**There is no standard mapping** between the two. The mapping depends entirely on how you physically wire your electrodes:
+
+-   If you plug the electrode at **O1** into **pin N1P** on your board, then O1 data appears as **channel 1**
+-   If you plug **Fp1** into **pin N1P** instead, then Fp1 data appears as **channel 1**
+
+You need to keep track of which electrode position connects to which channel number in your setup. This mapping is sometimes called a "montage."
+:::
+
+## Common EEG Artifacts (Noise)
+
+EEG signals are tiny, so they're easily contaminated by **artifacts** (unwanted signals):
+
+| Artifact Type | Source | Typical Voltage | How to Minimize |
+|------------------|------------------|------------------|------------------|
+| Eye blinks | Eye muscles | 100-300 µV | Keep eyes closed or fixated |
+| Jaw clenching | Jaw muscles | 50-200 µV | Keep jaw relaxed |
+| Head movement | Motion | Variable | Stay still |
+| 60 Hz noise | Power lines | 10-50 µV | Proper grounding, shielding |
+| Electrode contact | Poor connection | Variable | Use conductive gel, clean skin |
+
+Notice that artifacts are often **larger than the brain signals themselves**! This is why EEG requires:
+
+-   Proper electrode preparation
+-   A quiet, still recording environment
+-   Signal processing to remove artifacts
+
+## Data Structure: Understanding EEG Arrays
+
+When you collect EEG data, you get a **2D array** (matrix):
+
+```
+           Time →
+         (samples)
+
+C  [  10.2   9.8  10.1  10.5  ...  ]  ← Channel 0
+h  [  -5.3  -5.1  -5.0  -4.9  ...  ]  ← Channel 1
+a  [  12.1  12.0  12.3  12.1  ...  ]  ← Channel 2
+n  [   ...   ...   ...   ...  ...  ]
+n  [   2.1   2.3   2.0   2.2  ...  ]  ← Channel 15
+e
+l
+s
+↓
+```
+
+-   **Rows**: Different channels (electrodes)
+-   **Columns**: Time points (samples)
+-   **Values**: Voltage in microvolts (µV)
+
+### Example
+
+If you record for **5 seconds** at **250 Hz** with **16 channels**:
+
+-   **Shape**: 16 rows × 1,250 columns
+-   **Each channel**: 1,250 voltage measurements
+-   **Each sample**: 16 simultaneous voltage readings (one per channel)
+
+## Units Summary
+
+Let's recap the units you'll see:
+
+| Measurement   | Unit      | Symbol | Typical EEG Value |
+|---------------|-----------|--------|-------------------|
+| Voltage       | Microvolt | µV     | 10-100 µV         |
+| Frequency     | Hertz     | Hz     | 8-13 Hz (alpha)   |
+| Sampling Rate | Hertz     | Hz     | 250 Hz            |
+| Time          | Second    | s      | N/A               |
+| Amplitude     | Microvolt | µV     | 10-100 µV         |

@@ -1,0 +1,271 @@
+---
+title: "Understanding EEG Boards"
+subtitle: "Synthetic vs. OpenBCI Hardware"
+format:
+  html:
+    code-fold: false
+    toc: true
+    toc-depth: 2
+execute:
+  eval: false
+---
+
+## What is a "Board"?
+
+In the context of EEG and BrainFlow, a **board** refers to the hardware device (or simulated device) that acquires biosignal data. Think of it as the "data source" - the thing that actually captures electrical signals from your body.
+
+**BrainFlow** is designed to work with many different boards using the same code interface. Whether you're using a synthetic simulator or real OpenBCI hardware, the code stays largely the same - you just change the board ID.
+
+## Two Paths for Learning
+
+This tutorial series supports two approaches:
+
+1.  **Synthetic Board** (no hardware): Perfect for learning the software and algorithms
+2.  **OpenBCI Hardware** (real EEG): For actual brain signal acquisition
+
+Let's explore both options.
+
+## The Synthetic Board
+
+### What is it?
+
+The **Synthetic Board** is a software simulator built into BrainFlow. It generates realistic-looking biosignal data without requiring any physical hardware.
+
+-   **No hardware required**: Master BrainFlow without electrode setup headaches
+-   **Consistent signals**: Same data patterns every time (great for debugging)
+
+### What data does it provide?
+
+The synthetic board simulates **all 32 data channels** that a full-featured device might provide:
+
+| Row(s) | Channel Type | Description |
+|------------------|---------------------------|---------------------------|
+| 0 | Package Number | Sequential packet counter |
+| **1-16** | **EEG** | **16 EEG channels (Fz, C3, Cz, C4, Pz, PO7, Oz, PO8, F5, F7, F3, F1, F2, F4, F6, F8)** |
+| 17-19 | Accelerometer | X, Y, Z acceleration |
+| 20-22 | Gyroscope | X, Y, Z rotation |
+| 23 | EDA | Electrodermal activity (skin conductance) |
+| 24-25 | PPG | Photoplethysmogram (heart rate) |
+| 26 | Temperature | Device temperature |
+| 27-28 | Resistance | Electrode impedance |
+| 29 | Battery | Battery level |
+| 30 | Timestamp | Time in seconds |
+| 31 | Marker | Event markers |
+
+::: callout-tip
+## Data Shape
+
+When you collect data from the synthetic board, you'll get a 2D array with **32 rows** (all channels: EEG + auxiliary sensors + metadata). For brain wave analysis, focus on **rows 1-16** (the EEG channels).
+:::
+
+### Synthetic Board Code Example
+
+``` python
+from brainflow.board_shim import BoardIds, BoardShim, BrainFlowInputParams
+
+# Specify synthetic board
+board_id = BoardIds.SYNTHETIC_BOARD.value
+
+# No parameters needed for synthetic board
+params = BrainFlowInputParams()
+
+# Initialize and connect
+board = BoardShim(board_id, params)
+board.prepare_session()
+board.start_stream()
+
+# ... collect data ...
+
+board.stop_stream()
+board.release_session()
+```
+
+That's it! No serial ports, no IP addresses, no hardware configuration.
+
+## OpenBCI Hardware
+
+### What is OpenBCI?
+
+[**OpenBCI**](https://openbci.com/) (Open Brain-Computer Interface) manufactures affordable, open-source EEG hardware. Their boards are widely used in research, education, and DIY neuroscience projects.
+
+### OpenBCI Cyton + Daisy Boards
+
+The **Cyton** is OpenBCI's main 8-channel EEG board.
+
+**Key specifications for Cyton:**\
+- **Number of EEG channels**: 8\
+- **Sampling rate**: 250 Hz (default, configurable)\
+- **Resolution**: 24-bit ADC\
+- **Connection**: USB dongle (wireless) or direct serial\
+- **Expandable**: Can add Daisy module for 16 channels
+
+The **Daisy module** is an add-on that extends your setup to **16 channels**.
+
+**Key specifications for Daisy:**\
+- **Number of EEG channels**: 16 (8 from Cyton + 8 from Daisy)\
+- **Sampling rate**: 125 Hz (half of Cyton-only to accommodate extra channels)\
+- **Otherwise identical to Cyton**\
+- **Grants full 10-20 system coverage**
+
+::: callout-warning
+## Sampling Rate Trade-off
+
+When you add the Daisy module, the sampling rate drops from 250 Hz to 125 Hz. This is still more than adequate for detecting brain waves (remember, alpha is only 8-13 Hz, so the Nyquist requirement is 26 Hz minimum).
+:::
+
+## Data Structure Comparison
+
+Here's how the data differs between boards:
+
+### Synthetic Board
+
+``` python
+data.shape  # (32, ~1250) for 5 seconds
+# 32 rows = full sensor suite + metadata
+# Row 0: Package number
+# Rows 1-16: EEG channels
+# Rows 17-31: Other sensors and metadata
+```
+
+### OpenBCI Cyton (8-channel)
+
+``` python
+data.shape  # (varies, ~1250) for 5 seconds at 250 Hz
+# Fewer total rows (no gyroscope, PPG, etc.)
+# Exact row count depends on board version
+# Use BoardShim.get_eeg_channels() to find EEG row indices
+```
+
+### OpenBCI Cyton + Daisy (16-channel)
+
+``` python
+data.shape  # (varies, ~625) for 5 seconds at 125 Hz
+# 16 EEG channels (8 + 8)
+# Sampling rate is halved
+# Use BoardShim.get_eeg_channels() to find EEG row indices
+```
+
+::: callout-important
+## Always Use get_eeg_channels()
+
+**Never hardcode channel indices!** Different boards have different row structures. Always query the board for its EEG channel indices:
+
+``` python
+eeg_channels = BoardShim.get_eeg_channels(board_id)
+eeg_data = data[eeg_channels, :]  # Extract only EEG rows
+```
+
+This makes your code work across all board types.
+:::
+
+## Switching from Synthetic to Real Hardware
+
+The beauty of BrainFlow is that switching from synthetic to real hardware is trivial:
+
+### Synthetic Board Setup
+
+``` python
+board_id = BoardIds.SYNTHETIC_BOARD.value
+params = BrainFlowInputParams()
+```
+
+### OpenBCI Cyton Setup
+
+``` python
+board_id = BoardIds.CYTON_BOARD.value
+params = BrainFlowInputParams()
+params.serial_port = "/dev/ttyUSB0"  # Or "COM3" on Windows
+```
+
+That's the only difference! The rest of your code (starting stream, getting data, processing signals) remains identical.
+
+::: callout-note
+## Finding Your Serial Port
+
+**macOS/Linux:**
+
+``` bash
+ls /dev/tty.*
+# Look for /dev/tty.usbserial-XXXXXX
+```
+
+**Windows:** - Open Device Manager - Look under "Ports (COM & LPT)" - Note the COM port number (e.g., COM3)
+:::
+
+## Channel Naming: The 10-20 System
+
+Both synthetic and real OpenBCI boards use the **10-20 system** for naming electrode positions.
+
+### Synthetic Board (16 channels)
+
+Channel positions: `Fz, C3, Cz, C4, Pz, PO7, Oz, PO8, F5, F7, F3, F1, F2, F4, F6, F8`
+
+```
+       F7  F5  F3  F1 Fz F2  F4  F6  F8
+
+             C3  Cz  C4
+
+                Pz
+
+        PO7        Oz        PO8
+```
+
+### OpenBCI Cyton (8 channels)
+
+Standard configuration (you can customize): `Fp1, Fp2, C3, C4, P7, P8, O1, O2`
+
+For alpha detection, **O1 and O2** (occipital) are critical.
+
+### OpenBCI Cyton + Daisy (16 channels)
+
+Full 10-20 coverage: `Fp1, Fp2, C3, C4, P7, P8, O1, O2, F7, F8, F3, F4, T7, T8, P3, P4`
+
+## Hardware Requirements
+
+### If you want to use synthetic board:
+
+-   **Nothing!** Just install BrainFlow (covered in next tutorial)
+
+### If you want to use real OpenBCI hardware:
+
+**Essential:** - OpenBCI Cyton board (\~\$300-500) - USB dongle (usually included) - Gold cup electrodes or headset - Conductive paste/gel - Computer with Python 3.7+
+
+**Nice to have:** - OpenBCI Daisy module (for 16 channels) - Ultracortex headset (easier than manual electrode placement) - Ground/reference electrode cables
+
+## Which Should You Use?
+
+| Factor | Synthetic Board | OpenBCI Hardware |
+|------------------|---------------------------|----------------------------|
+| **Cost** | Free | \$300-500+ |
+| **Setup time** | Instant | 10-30 minutes per session |
+| **Learning curve** | None | Moderate (electrode placement) |
+| **Data quality** | Consistent (but fake) | Variable (real brain signals + noise) |
+| **Real neurofeedback** | No | Yes |
+| **Good for beginners** | Yes | After learning with synthetic |
+
+**Recommendation:**
+
+1.  Start with the **synthetic board** to learn BrainFlow, signal processing, and neurofeedback concepts
+2.  Once your code works perfectly with synthetic data, invest in **real hardware**
+3.  Use real hardware for actual neurofeedback training and research
+
+## What's Next?
+
+Now that you understand the different boards and their data structures, you're ready to write your first BrainFlow program!
+
+In the next tutorial, you'll:
+
+-   Install BrainFlow
+-   Connect to the synthetic board
+-   Acquire your first data stream
+-   Examine the 32-row data structure
+-   Extract and analyze EEG channels
+
+**Continue to**: [Hello BrainFlow](02-hello-brainflow.qmd)
+
+## Further Reading
+
+-   [BrainFlow Supported Boards](https://brainflow.readthedocs.io/en/stable/SupportedBoards.html) - Complete list of compatible hardware
+-   [OpenBCI Documentation](https://docs.openbci.com/) - Hardware guides and electrode placement
+-   [OpenBCI Shop](https://shop.openbci.com/) - Purchase hardware
+-   [10-20 System Guide](https://en.wikipedia.org/wiki/10%E2%80%9320_system_(EEG)) - Electrode placement standard

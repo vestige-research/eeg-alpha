@@ -1,4 +1,4 @@
-.PHONY: help setup test format lint commit clean branch sync push
+.PHONY: help setup test format lint commit clean branch sync push docs docs-preview docs-render
 
 help:
 	@echo "eeg-alpha - Development Commands"
@@ -11,6 +11,10 @@ help:
 	@echo "  make lint           - Lint code with ruff"
 	@echo "  make test           - Run tests with pytest"
 	@echo "  make check          - Run all checks (format, lint, test)"
+	@echo ""
+	@echo "Documentation:"
+	@echo "  make docs           - Preview documentation site (live reload)"
+	@echo "  make docs-render    - Build documentation to _site/"
 	@echo ""
 	@echo "Git Workflow:"
 	@echo "  make branch NAME=feature-name  - Create and switch to new feature branch"
@@ -67,10 +71,20 @@ push:
 	@git push -u origin $$(git branch --show-current)
 	@echo "✓ Branch pushed to remote"
 
+docs:
+	@echo "📚 Starting documentation preview..."
+	@quarto preview docs/
+
+docs-render:
+	@echo "🔨 Building documentation..."
+	@quarto render docs/
+	@echo "✓ Documentation built to _site/"
+
 clean:
 	@echo "🧹 Cleaning up..."
 	@find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 	@find . -type f -name "*.pyc" -delete
 	@find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
 	@find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
+	@rm -rf _site/ .quarto/ 2>/dev/null || true
 	@echo "✓ Cleanup complete"
